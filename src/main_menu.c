@@ -215,6 +215,7 @@ static void DrawMainMenuWindowBorder(const struct WindowTemplate *, u16);
 static void Task_HighlightSelectedMainMenuItem(u8);
 static void Task_NewGameBirchSpeech_WaitToShowGenderMenu(u8);
 static void Task_NewGameBirchSpeech_ChooseGender(u8);
+static void Task_NewGameBirchSpeech_ChooseGameMode(u8);
 static void NewGameBirchSpeech_ShowGenderMenu(void);
 static s8 NewGameBirchSpeech_ProcessGenderMenuInput(void);
 static void NewGameBirchSpeech_ClearGenderWindow(u8, u8);
@@ -236,6 +237,7 @@ static void Task_NewGameBirchSpeech_ShrinkPlayer(u8);
 static void SpriteCB_MovePlayerDownWhileShrinking(struct Sprite *);
 static void Task_NewGameBirchSpeech_WaitForPlayerShrink(u8);
 static void Task_NewGameBirchSpeech_FadePlayerToWhite(u8);
+static void Task_NewGameBirchSpeech_ProcessModeMenuInput(u8);
 static void Task_NewGameBirchSpeech_Cleanup(u8);
 static void SpriteCB_Null();
 static void Task_NewGameBirchSpeech_ReturnFromNamingScreenShowTextbox(u8);
@@ -1769,8 +1771,32 @@ static void Task_NewGameBirchSpeech_FadePlayerToWhite(u8 taskId)
         gSprites[spriteId].callback = SpriteCB_Null;
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         BeginNormalPaletteFade(PALETTES_OBJECTS, 0, 0, 16, RGB_WHITEALPHA);
-        gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
+        gTasks[taskId].func = Task_NewGameBirchSpeech_ChooseGameMode;
     }
+}
+
+static void Task_NewGameBirchSpeech_ChooseGameMode(u8 taskId)
+{
+    if (!RunTextPrintersAndIsPrinter0Active())
+    {
+        CreateYesNoMenuParameterized(2, 1, 0xF3, 0xDF, 2, 15);
+        gTasks[taskId].func = Task_NewGameBirchSpeech_ProcessModeMenuInput;
+    }
+}
+
+static void Task_NewGameBirchSpeech_ProcessModeMenuInput(u8 taskId)
+{
+  switch (Menu_ProcessInputNoWrapClearOnChoose())
+    {
+        case 0:
+            PlaySE(SE_SELECT);
+            gSaveBlock2Ptr->gameMode = 0;
+            gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
+        case 1:
+            PlaySE(SE_SELECT);
+            gSaveBlock2Ptr->gameMode = 1;
+            gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
+    }  
 }
 
 static void Task_NewGameBirchSpeech_Cleanup(u8 taskId)
