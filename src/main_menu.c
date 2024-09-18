@@ -237,6 +237,8 @@ static void Task_NewGameBirchSpeech_ShrinkPlayer(u8);
 static void SpriteCB_MovePlayerDownWhileShrinking(struct Sprite *);
 static void Task_NewGameBirchSpeech_WaitForPlayerShrink(u8);
 static void Task_NewGameBirchSpeech_FadePlayerToWhite(u8);
+static void Task_NewGameBirchSpeech_ModeMessage(u8);
+static void Task_NewGameBirchSpeech_ChooseGameMode(u8);
 static void Task_NewGameBirchSpeech_ProcessModeMenuInput(u8);
 static void Task_NewGameBirchSpeech_Cleanup(u8);
 static void SpriteCB_Null();
@@ -1771,8 +1773,16 @@ static void Task_NewGameBirchSpeech_FadePlayerToWhite(u8 taskId)
         gSprites[spriteId].callback = SpriteCB_Null;
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         BeginNormalPaletteFade(PALETTES_OBJECTS, 0, 0, 16, RGB_WHITEALPHA);
-        gTasks[taskId].func = Task_NewGameBirchSpeech_ChooseGameMode;
+        gTasks[taskId].func = Task_NewGameBirchSpeech_ModeMessage;
     }
+}
+
+static void Task_NewGameBirchSpeech_ModeMessage(u8 taskId)
+{
+    NewGameBirchSpeech_ClearWindow(0);
+    StringExpandPlaceholders(gStringVar4, gText_Birch_placeholder);
+    AddTextPrinterForMessage(TRUE);
+    gTasks[taskId].func = Task_NewGameBirchSpeech_ChooseGameMode;
 }
 
 static void Task_NewGameBirchSpeech_ChooseGameMode(u8 taskId)
