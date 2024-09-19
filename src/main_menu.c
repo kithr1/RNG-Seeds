@@ -1729,7 +1729,7 @@ static void Task_NewGameBirchSpeech_AreYouReady(u8 taskId)
         NewGameBirchSpeech_StartFadePlatformOut(taskId, 1);
         StringExpandPlaceholders(gStringVar4, gText_Birch_AreYouReady);
         AddTextPrinterForMessage(TRUE);
-        gTasks[taskId].func = Task_NewGameBirchSpeech_ShrinkPlayer;
+        gTasks[taskId].func = Task_NewGameBirchSpeech_ModeMessage;
     }
 }
 
@@ -1773,7 +1773,7 @@ static void Task_NewGameBirchSpeech_FadePlayerToWhite(u8 taskId)
         gSprites[spriteId].callback = SpriteCB_Null;
         SetGpuReg(REG_OFFSET_DISPCNT, DISPCNT_OBJ_ON | DISPCNT_OBJ_1D_MAP);
         BeginNormalPaletteFade(PALETTES_OBJECTS, 0, 0, 16, RGB_WHITEALPHA);
-        gTasks[taskId].func = Task_NewGameBirchSpeech_ModeMessage;
+        gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
     }
 }
 
@@ -1801,11 +1801,11 @@ static void Task_NewGameBirchSpeech_ProcessModeMenuInput(u8 taskId)
         case 0:
             PlaySE(SE_SELECT);
             gSaveBlock2Ptr->gameMode = 0;
-            gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
+            gTasks[taskId].func = Task_NewGameBirchSpeech_ShrinkPlayer;
         case 1:
             PlaySE(SE_SELECT);
             gSaveBlock2Ptr->gameMode = 1;
-            gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
+            gTasks[taskId].func = Task_NewGameBirchSpeech_ShrinkPlayer;
     }  
 }
 
