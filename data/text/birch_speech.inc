@@ -60,6 +60,8 @@ gText_Birch_AreYouReady::
 	.string "Come see me in my POKéMON LAB.\p"
 	.string "$"
 
-gText_Birch_placeholder::
-	.string "This is a placeholder message!"
+gText_Birch_ModeSelection::
+	.string "Some elements of this game are\n"
+	.string "generated from an RNG seed.\p"
+	.string "Do you have a seed in mind?\n"
 	.string "$"

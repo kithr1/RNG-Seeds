@@ -1733,6 +1733,38 @@ static void Task_NewGameBirchSpeech_AreYouReady(u8 taskId)
     }
 }
 
+static void Task_NewGameBirchSpeech_ModeMessage(u8 taskId)
+{
+    NewGameBirchSpeech_ClearWindow(0);
+    StringExpandPlaceholders(gStringVar4, gText_Birch_ModeSelection);
+    AddTextPrinterForMessage(TRUE);
+    gTasks[taskId].func = Task_NewGameBirchSpeech_ChooseGameMode;
+}
+
+static void Task_NewGameBirchSpeech_ChooseGameMode(u8 taskId)
+{
+    if (!RunTextPrintersAndIsPrinter0Active())
+    {
+        CreateYesNoMenuParameterized(2, 1, 0xF3, 0xDF, 2, 15);
+        gTasks[taskId].func = Task_NewGameBirchSpeech_ProcessModeMenuInput;
+    }
+}
+
+static void Task_NewGameBirchSpeech_ProcessModeMenuInput(u8 taskId)
+{
+  switch (Menu_ProcessInputNoWrapClearOnChoose())
+    {
+        case 0:
+            PlaySE(SE_SELECT);
+            gSaveBlock2Ptr->gameMode = 0;
+            gTasks[taskId].func = Task_NewGameBirchSpeech_ShrinkPlayer;
+        case 1:
+            PlaySE(SE_SELECT);
+            gSaveBlock2Ptr->gameMode = 1;
+            gTasks[taskId].func = Task_NewGameBirchSpeech_ShrinkPlayer;
+    }  
+}
+
 static void Task_NewGameBirchSpeech_ShrinkPlayer(u8 taskId)
 {
     u8 spriteId;
@@ -1775,38 +1807,6 @@ static void Task_NewGameBirchSpeech_FadePlayerToWhite(u8 taskId)
         BeginNormalPaletteFade(PALETTES_OBJECTS, 0, 0, 16, RGB_WHITEALPHA);
         gTasks[taskId].func = Task_NewGameBirchSpeech_Cleanup;
     }
-}
-
-static void Task_NewGameBirchSpeech_ModeMessage(u8 taskId)
-{
-    NewGameBirchSpeech_ClearWindow(0);
-    StringExpandPlaceholders(gStringVar4, gText_Birch_placeholder);
-    AddTextPrinterForMessage(TRUE);
-    gTasks[taskId].func = Task_NewGameBirchSpeech_ChooseGameMode;
-}
-
-static void Task_NewGameBirchSpeech_ChooseGameMode(u8 taskId)
-{
-    if (!RunTextPrintersAndIsPrinter0Active())
-    {
-        CreateYesNoMenuParameterized(2, 1, 0xF3, 0xDF, 2, 15);
-        gTasks[taskId].func = Task_NewGameBirchSpeech_ProcessModeMenuInput;
-    }
-}
-
-static void Task_NewGameBirchSpeech_ProcessModeMenuInput(u8 taskId)
-{
-  switch (Menu_ProcessInputNoWrapClearOnChoose())
-    {
-        case 0:
-            PlaySE(SE_SELECT);
-            gSaveBlock2Ptr->gameMode = 0;
-            gTasks[taskId].func = Task_NewGameBirchSpeech_ShrinkPlayer;
-        case 1:
-            PlaySE(SE_SELECT);
-            gSaveBlock2Ptr->gameMode = 1;
-            gTasks[taskId].func = Task_NewGameBirchSpeech_ShrinkPlayer;
-    }  
 }
 
 static void Task_NewGameBirchSpeech_Cleanup(u8 taskId)
@@ -2300,7 +2300,7 @@ static void NewGameBirchSpeech_WaitForThisIsPokemonText(struct TextPrinterTempla
 void CreateYesNoMenuParameterized(u8 x, u8 y, u16 baseTileNum, u16 baseBlock, u8 yesNoPalNum, u8 winPalNum)
 {
     struct WindowTemplate template = CreateWindowTemplate(0, x + 1, y + 1, 5, 4, winPalNum, baseBlock);
-    CreateYesNoMenu(&template, baseTileNum, yesNoPalNum, 0);
+    CreateYesNoMenu(&template, baseTileNum, yesNoPalNum, 1);
 }
 
 static void NewGameBirchSpeech_ShowDialogueWindow(u8 windowId, u8 copyToVram)
