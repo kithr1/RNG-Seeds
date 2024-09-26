@@ -1761,6 +1761,8 @@ static void Task_NewGameBirchSpeech_ProcessModeMenuInput(u8 taskId)
         case 1:
             PlaySE(SE_SELECT);
             gSaveBlock2Ptr->gameMode = 1;
+            u32 randomSeed = Random32();
+            gSaveBlock3Ptr->masterSeed = randomSeed;
             gTasks[taskId].func = Task_NewGameBirchSpeech_ShrinkPlayer;
     }  
 }
